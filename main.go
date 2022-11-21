@@ -1,6 +1,8 @@
 package main
 
 import (
+	"PersonWeb/models"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -26,7 +28,16 @@ func main() {
 }
 
 func getPersons(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "getPersons Called"})
+
+	persons, err := models.GetPersons(10)
+	checkErr(err)
+
+	if persons == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No Records Found"})
+		return
+	} else {
+		c.JSON(http.StatusOK, gin.H{"data": persons})
+	}
 }
 
 func getPersonById(c *gin.Context) {
@@ -49,4 +60,10 @@ func deletePerson(c *gin.Context) {
 
 func options(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "options Called"})
+}
+
+func checkErr(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }
